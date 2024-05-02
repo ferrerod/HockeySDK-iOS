@@ -241,8 +241,9 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
     _fileManager = [[NSFileManager alloc] init];
     _crashFiles = [[NSMutableArray alloc] init];
     
-    _crashManagerStatus = BITCrashManagerStatusAlwaysAsk;
-    
+    // iOS apps should auto send crash reports
+    _crashManagerStatus = BITCrashManagerStatusAutoSend;
+
     if ([[NSUserDefaults standardUserDefaults] stringForKey:kBITCrashManagerStatus]) {
       _crashManagerStatus = (BITCrashManagerStatus)[[NSUserDefaults standardUserDefaults] integerForKey:kBITCrashManagerStatus];
     } else {
@@ -454,7 +455,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
  *
  *	@return XML structure with the app specific UUIDs
  */
-- (NSString *) extractAppUUIDs:(BITPLCrashReport *)report {
+- (NSString *) extractAppUUIDs:(PLCrashReport *)report {
   NSMutableString *uuidString = [NSMutableString string];
   NSArray *uuidArray = [BITCrashReportTextFormatter arrayOfAppUUIDsForCrashReport:report];
   
@@ -910,7 +911,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
       BITHockeyLogError(@"ERROR: Could not load crash report: %@", error);
     } else {
       // get the startup timestamp from the crash report, and the file timestamp to calculate the timeinterval when the crash happened after startup
-      BITPLCrashReport *report = [[BITPLCrashReport alloc] initWithData:crashData error:&error];
+      PLCrashReport *report = [[PLCrashReport alloc] initWithData:crashData error:&error];
       
       if (report == nil) {
         BITHockeyLogWarning(@"WARNING: Could not parse crash report");
@@ -1180,9 +1181,9 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
         symbolicationStrategy = PLCrashReporterSymbolicationStrategyAll;
       }
       
-      BITPLCrashReporterConfig *config = [[BITPLCrashReporterConfig alloc] initWithSignalHandlerType: signalHandlerType
+      PLCrashReporterConfig *config = [[PLCrashReporterConfig alloc] initWithSignalHandlerType: signalHandlerType
                                                                                symbolicationStrategy: symbolicationStrategy];
-      self.plCrashReporter = [[BITPLCrashReporter alloc] initWithConfiguration: config];
+      self.plCrashReporter = [[PLCrashReporter alloc] initWithConfiguration: config];
       
       // Check if we previously crashed
       if ([self.plCrashReporter hasPendingCrashReport]) {
@@ -1423,7 +1424,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
   NSData *crashData = [NSData dataWithContentsOfFile:filename];
   
   if ([crashData length] > 0) {
-    BITPLCrashReport *report = nil;
+    PLCrashReport *report = nil;
     NSString *crashUUID = @"";
     NSString *installString = nil;
     NSString *crashLogString = nil;
@@ -1461,7 +1462,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
       }
       
     } else {
-      report = [[BITPLCrashReport alloc] initWithData:crashData error:&error];
+      report = [[PLCrashReport alloc] initWithData:crashData error:&error];
     }
     
     if (report == nil && crashLogString == nil) {
@@ -1528,7 +1529,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
       }
     }
     
-    crashXML = [NSString stringWithFormat:@"<crashes><crash><applicationname><![CDATA[%@]]></applicationname><uuids>%@</uuids><bundleidentifier>%@</bundleidentifier><systemversion>%@</systemversion><platform>%@</platform><senderversion>%@</senderversion><versionstring>%@</versionstring><version>%@</version><uuid>%@</uuid><log><![CDATA[%@]]></log><userid>%@</userid><username>%@</username><contact>%@</contact><installstring>%@</installstring><description><![CDATA[%@]]></description></crash></crashes>",
+    crashXML = [NSString stringWithFormat:@"<crashes><crash><bsprotocolversion>1.1</bsprotocolversion><applicationname><![CDATA[%@]]></applicationname><uuids>%@</uuids><bundleidentifier>%@</bundleidentifier><systemversion>%@</systemversion><platform>%@</platform><senderversion>%@</senderversion><versionstring>%@</versionstring><version>%@</version><uuid>%@</uuid><log><![CDATA[%@]]></log><userid>%@</userid><username>%@</username><contact>%@</contact><installstring>%@</installstring><description><![CDATA[%@]]></description></crash></crashes>",
                 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleExecutable"],
                 appBinaryUUIDs,
                 appBundleIdentifier,
@@ -1602,7 +1603,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
                                                               parameters:nil];
   
   [request setCachePolicy: NSURLRequestReloadIgnoringLocalCacheData];
-  [request setValue:@"HockeySDK/iOS" forHTTPHeaderField:@"User-Agent"];
+  [request setValue:@"BugSplat-iOS" forHTTPHeaderField:@"User-Agent"];
   [request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
   
   NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];

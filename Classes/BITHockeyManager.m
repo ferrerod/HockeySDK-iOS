@@ -393,7 +393,9 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
     _serverURL = [aServerURL copy];
     
     if (self.hockeyAppClient) {
-      self.hockeyAppClient.baseURL = [NSURL URLWithString:self.serverURL ?: BITHOCKEYSDK_URL];
+      NSURL *baseURL = [NSURL URLWithString:self.serverURL ?: BITHOCKEYSDK_URL];
+      BITHockeyLogDebug(@"DEBUG: BITHockeyAppClient.baseURL = [%@]", [baseURL absoluteString]);
+      self.hockeyAppClient.baseURL = baseURL;
     }
   }
 }

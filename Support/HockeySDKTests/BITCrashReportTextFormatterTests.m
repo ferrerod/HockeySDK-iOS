@@ -213,7 +213,7 @@
   assertThat(crashData, notNilValue());
   
   NSError *error = nil;
-  BITPLCrashReport *report = [[BITPLCrashReport alloc] initWithData:crashData error:&error];
+  PLCrashReport *report = [[PLCrashReport alloc] initWithData:crashData error:&error];
   
   NSString *crashLogString = [BITCrashReportTextFormatter stringValueForCrashReport:report crashReporterKey:@""];
 
@@ -222,7 +222,7 @@
   crashData = [BITTestHelper dataOfFixtureCrashReportWithFileName:@"live_report_signal_marketing"];
   assertThat(crashData, notNilValue());
   
-  report = [[BITPLCrashReport alloc] initWithData:crashData error:&error];
+  report = [[PLCrashReport alloc] initWithData:crashData error:&error];
   
   crashLogString = [BITCrashReportTextFormatter stringValueForCrashReport:report crashReporterKey:@""];
   
@@ -234,7 +234,7 @@
   assertThat(crashData, notNilValue());
   
   NSError *error = nil;
-  BITPLCrashReport *report = [[BITPLCrashReport alloc] initWithData:crashData error:&error];
+  PLCrashReport *report = [[PLCrashReport alloc] initWithData:crashData error:&error];
   
   NSString *crashLogString = [BITCrashReportTextFormatter stringValueForCrashReport:report crashReporterKey:@""];
   
@@ -243,7 +243,7 @@
   crashData = [BITTestHelper dataOfFixtureCrashReportWithFileName:@"live_report_exception_marketing"];
   assertThat(crashData, notNilValue());
   
-  report = [[BITPLCrashReport alloc] initWithData:crashData error:&error];
+  report = [[PLCrashReport alloc] initWithData:crashData error:&error];
   
   crashLogString = [BITCrashReportTextFormatter stringValueForCrashReport:report crashReporterKey:@""];
   
@@ -255,7 +255,7 @@
   assertThat(crashData, notNilValue());
   
   NSError *error = nil;
-  BITPLCrashReport *report = [[BITPLCrashReport alloc] initWithData:crashData error:&error];
+  PLCrashReport *report = [[PLCrashReport alloc] initWithData:crashData error:&error];
   
   NSString *filePath = [[NSBundle bundleForClass:self.class] pathForResource:@"log_report_xamarin" ofType:@""];
   NSString *expected = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
