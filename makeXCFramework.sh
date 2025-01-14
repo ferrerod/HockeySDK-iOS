@@ -1,6 +1,8 @@
 rm -rf Vendor/*
 rm -rf archives/*
 rm -rf xcframeworks/*
+rmdir Vendor
+mkdir Vendor
 cp -a ../plCrashReporter/xcframeworks/CrashReporter.xcframework Vendor/
 xcodebuild archive -project Support/HockeySDK.xcodeproj -scheme "HockeySDK Framework" -configuration "ReleaseCrashOnly" -destination "generic/platform=iOS" -archivePath "archives/HockeySDK-iOS"
 xcodebuild archive -project Support/HockeySDK.xcodeproj -scheme "HockeySDK Framework" -configuration "ReleaseCrashOnly" -destination "generic/platform=iOS Simulator" -archivePath "archives/HockeySDK-iOS_Simulator"
