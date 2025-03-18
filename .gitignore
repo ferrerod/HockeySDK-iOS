@@ -31,3 +31,10 @@ profile
 
 Generated/
 Products/
+
+xcuserdata
+
+# temporary
+xcframeworks
+Vendor
+archives
