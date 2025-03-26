@@ -84,9 +84,9 @@ extern NSString *const kBITFeedbackUpdateAttachmentThumbnail;
 
 
 // Fetch user meta data
-- (BOOL)updateUserIDUsingKeychainAndDelegate;
-- (BOOL)updateUserNameUsingKeychainAndDelegate;
-- (BOOL)updateUserEmailUsingKeychainAndDelegate;
+- (BOOL)updateUserIDUsingDelegate;
+- (BOOL)updateUserNameUsingDelegate;
+- (BOOL)updateUserEmailUsingDelegate;
 
 // check if the user wants to influence when fetching of new messages may be done
 - (BOOL)allowFetchingNewMessages;

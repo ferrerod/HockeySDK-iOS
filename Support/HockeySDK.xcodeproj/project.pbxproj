@@ -255,6 +255,10 @@
 		628B7821DFEF43CBC1BB09A6 /* BITHockeyLoggerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 628B7B9B7E7741C3D85B1159 /* BITHockeyLoggerTests.m */; };
 		6341B2922BE0165C007EE8AC /* CrashReporter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63598C372B9A412800770E43 /* CrashReporter.xcframework */; };
 		6341B2932BE0165C007EE8AC /* CrashReporter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 63598C372B9A412800770E43 /* CrashReporter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		637EA8BC2D8B6209008F79E3 /* BITHockeyUserData.h in Headers */ = {isa = PBXBuildFile; fileRef = 637EA8BB2D8B6209008F79E3 /* BITHockeyUserData.h */; };
+		637EA8BD2D8B6209008F79E3 /* BITHockeyUserData.h in Headers */ = {isa = PBXBuildFile; fileRef = 637EA8BB2D8B6209008F79E3 /* BITHockeyUserData.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		637EA8BF2D8B6988008F79E3 /* BITHockeyUserData.m in Sources */ = {isa = PBXBuildFile; fileRef = 637EA8BE2D8B6988008F79E3 /* BITHockeyUserData.m */; };
+		637EA8C02D8B6988008F79E3 /* BITHockeyUserData.m in Sources */ = {isa = PBXBuildFile; fileRef = 637EA8BE2D8B6988008F79E3 /* BITHockeyUserData.m */; };
 		6EA5DEA51CC05E7600D44206 /* live_report_xamarin.plcrash in Resources */ = {isa = PBXBuildFile; fileRef = 6EA5DEA41CC05E7600D44206 /* live_report_xamarin.plcrash */; };
 		6EA5DEA61CC05E7600D44206 /* live_report_xamarin.plcrash in Resources */ = {isa = PBXBuildFile; fileRef = 6EA5DEA41CC05E7600D44206 /* live_report_xamarin.plcrash */; };
 		6EA5DEAE1CC0670000D44206 /* log_report_xamarin in Resources */ = {isa = PBXBuildFile; fileRef = 6EA5DEAD1CC0670000D44206 /* log_report_xamarin */; };
@@ -660,6 +664,8 @@
 		1EFF03E417F2485500A5F13C /* BITCrashManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BITCrashManagerTests.m; sourceTree = "<group>"; };
 		628B7B9B7E7741C3D85B1159 /* BITHockeyLoggerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BITHockeyLoggerTests.m; sourceTree = "<group>"; };
 		63598C372B9A412800770E43 /* CrashReporter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CrashReporter.xcframework; path = ../Vendor/CrashReporter.xcframework; sourceTree = "<group>"; };
+		637EA8BB2D8B6209008F79E3 /* BITHockeyUserData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BITHockeyUserData.h; sourceTree = "<group>"; };
+		637EA8BE2D8B6988008F79E3 /* BITHockeyUserData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BITHockeyUserData.m; sourceTree = "<group>"; };
 		6EA5DEA41CC05E7600D44206 /* live_report_xamarin.plcrash */ = {isa = PBXFileReference; lastKnownFileType = file; path = live_report_xamarin.plcrash; sourceTree = "<group>"; };
 		6EA5DEAD1CC0670000D44206 /* log_report_xamarin */ = {isa = PBXFileReference; fileEncoding = 1; lastKnownFileType = text; path = log_report_xamarin; sourceTree = "<group>"; };
 		8007E2A41F29FCAB001649AE /* HockeySDKTest.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDKTest.xcconfig; sourceTree = "<group>"; };
@@ -1334,6 +1340,8 @@
 				1E5955FA15B7877A00A03429 /* BITHockeyManagerDelegate.h */,
 				1E71509A15B5C76F004E88FF /* HockeySDK.h */,
 				1E84DB3317E0977C00AC83FD /* HockeySDKFeatureConfig.h */,
+				637EA8BB2D8B6209008F79E3 /* BITHockeyUserData.h */,
+				637EA8BE2D8B6988008F79E3 /* BITHockeyUserData.m */,
 			);
 			name = Classes;
 			path = ../Classes;
@@ -1432,6 +1440,7 @@
 				1E754E601621FBB70070AB92 /* BITCrashReportTextFormatter.h in Headers */,
 				8034E62F1BA31AD600D83A30 /* BITMetricsManager.h in Headers */,
 				8034E6331BA31AD600D83A30 /* BITMetricsManagerPrivate.h in Headers */,
+				637EA8BC2D8B6209008F79E3 /* BITHockeyUserData.h in Headers */,
 				8034E6691BA31D7C00D83A30 /* BITApplication.h in Headers */,
 				1E84DB3417E099BA00AC83FD /* HockeySDKFeatureConfig.h in Headers */,
 				1EACC97B162F041E007578C5 /* BITAttributedLabel.h in Headers */,
@@ -1462,6 +1471,7 @@
 				1EB6179D1B0A31760035A986 /* BITFeedbackListViewController.h in Headers */,
 				1EB617841B0A31370035A986 /* BITRectangleImageAnnotation.h in Headers */,
 				1EB617AE1B0A31C50035A986 /* HockeySDK.h in Headers */,
+				637EA8BD2D8B6209008F79E3 /* BITHockeyUserData.h in Headers */,
 				1EB617991B0A31650035A986 /* BITFeedbackComposeViewController.h in Headers */,
 				1EB617651B0A30B30035A986 /* BITKeychainUtils.h in Headers */,
 				1EB617821B0A31310035A986 /* BITImageAnnotation.h in Headers */,
@@ -1887,6 +1897,7 @@
 				1E49A4C1161222B900463151 /* BITHockeyHelper.m in Sources */,
 				8034E6291BA31AD600D83A30 /* BITTelemetryContext.m in Sources */,
 				9774BD00192CB20A00085EB5 /* BITActivityIndicatorButton.m in Sources */,
+				637EA8C02D8B6988008F79E3 /* BITHockeyUserData.m in Sources */,
 				1E49A4821612226D00463151 /* BITUpdateViewController.m in Sources */,
 				E4B4DB7E17B435550099C67F /* BITAuthenticationViewController.m in Sources */,
 				8034E6A71BA3217400D83A30 /* BITSessionStateData.m in Sources */,
@@ -1992,6 +2003,7 @@
 				1EB617911B0A31510035A986 /* BITAppVersionMetaInfo.m in Sources */,
 				8034E6741BA31D7C00D83A30 /* BITData.m in Sources */,
 				8034E6441BA31AEF00D83A30 /* BITSender.m in Sources */,
+				637EA8BF2D8B6988008F79E3 /* BITHockeyUserData.m in Sources */,
 				1EB617791B0A310C0035A986 /* BITCrashDetails.m in Sources */,
 				8034E62A1BA31AD600D83A30 /* BITTelemetryContext.m in Sources */,
 				1EB6176C1B0A30C90035A986 /* BITStoreButton.m in Sources */,
@@ -2304,7 +2316,6 @@
 		1E27E60F1B74F03000192AE2 /* ReleaseCrashOnlyExtensions */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
 				GCC_THUMB_SUPPORT = NO;
@@ -2334,7 +2345,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -2539,7 +2549,6 @@
 		1E59551515B6F45800A03429 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
 				GCC_THUMB_SUPPORT = NO;
@@ -2557,7 +2566,6 @@
 		1E59551615B6F45800A03429 /* ReleaseDefault */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
 				GCC_THUMB_SUPPORT = NO;
@@ -2783,7 +2791,6 @@
 		1E7DE39219D44D88009AB8E5 /* ReleaseCrashOnly */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
 				GCC_THUMB_SUPPORT = NO;
@@ -2912,7 +2919,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -2967,7 +2973,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -3024,7 +3029,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -3690,7 +3694,6 @@
 		B22DFC041FC750FF0052AF19 /* ReleaseFeedbackOnly */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
 				GCC_THUMB_SUPPORT = NO;
@@ -3720,7 +3723,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -3996,7 +3998,6 @@
 		B29855471D85EBC9007FF452 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
 				GCC_THUMB_SUPPORT = NO;
@@ -4026,7 +4027,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;

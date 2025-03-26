@@ -494,27 +494,6 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
   }
 }
 
-- (void)setUserID:(NSString *)userID {
-  // always set it, since nil value will trigger removal of the keychain entry
-  _userID = userID;
-  
-  [self modifyKeychainUserValue:userID forKey:kBITHockeyMetaUserID];
-}
-
-- (void)setUserName:(NSString *)userName {
-  // always set it, since nil value will trigger removal of the keychain entry
-  _userName = userName;
-  
-  [self modifyKeychainUserValue:userName forKey:kBITHockeyMetaUserName];
-}
-
-- (void)setUserEmail:(NSString *)userEmail {
-  // always set it, since nil value will trigger removal of the keychain entry
-  _userEmail = userEmail;
-  
-  [self modifyKeychainUserValue:userEmail forKey:kBITHockeyMetaUserEmail];
-}
-
 - (void)testIdentifier {
   if (!self.appIdentifier || (self.appEnvironment == BITEnvironmentAppStore)) {
     return;

@@ -313,67 +313,58 @@ typedef void (^BITLatestImageFetchCompletionBlock)(UIImage *_Nonnull latestImage
   }
 }
 
-- (BOOL)updateUserIDUsingKeychainAndDelegate {
-  BOOL availableViaDelegate = NO;
+- (BOOL)updateUserIDUsingDelegate {
+  NSString *userID = nil;
 
-  NSString *userID = [self stringValueFromKeychainForKey:kBITHockeyMetaUserID];
   id<BITHockeyManagerDelegate> strongDelegate = [BITHockeyManager sharedHockeyManager].delegate;
   if ([strongDelegate respondsToSelector:@selector(userIDForHockeyManager:componentManager:)]) {
     userID = [strongDelegate userIDForHockeyManager:[BITHockeyManager sharedHockeyManager] componentManager:self];
   }
 
-  if (userID) {
-    availableViaDelegate = YES;
-    self.userID = userID;
-  }
+  self.userID = userID ?: @"";
 
-  return availableViaDelegate;
+  return userID != nil;
 }
 
-- (BOOL)updateUserNameUsingKeychainAndDelegate {
-  BOOL availableViaDelegate = NO;
+- (BOOL)updateUserNameUsingDelegate {
+  NSString *userName = nil;
 
-  NSString *userName = [self stringValueFromKeychainForKey:kBITHockeyMetaUserName];
   id<BITHockeyManagerDelegate> strongDelegate = [BITHockeyManager sharedHockeyManager].delegate;
   if ([strongDelegate respondsToSelector:@selector(userNameForHockeyManager:componentManager:)]) {
     userName = [strongDelegate userNameForHockeyManager:[BITHockeyManager sharedHockeyManager] componentManager:self];
   }
 
+  self.userName = userName ?: @"";
   if (userName) {
-    availableViaDelegate = YES;
-    self.userName = userName;
     self.requireUserName = BITFeedbackUserDataElementDontShow;
   }
 
-  return availableViaDelegate;
+  return userName != nil;
 }
 
-- (BOOL)updateUserEmailUsingKeychainAndDelegate {
-  BOOL availableViaDelegate = NO;
+- (BOOL)updateUserEmailUsingDelegate {
+  NSString *userEmail = nil;
 
-  NSString *userEmail = [self stringValueFromKeychainForKey:kBITHockeyMetaUserEmail];
   id<BITHockeyManagerDelegate> strongDelegate = [BITHockeyManager sharedHockeyManager].delegate;
   if ([strongDelegate respondsToSelector:@selector(userEmailForHockeyManager:componentManager:)]) {
     userEmail = [strongDelegate userEmailForHockeyManager:[BITHockeyManager sharedHockeyManager] componentManager:self];
   }
 
+  self.userEmail = userEmail ?: @"";
   if (userEmail) {
-    availableViaDelegate = YES;
-    self.userEmail = userEmail;
-    self.requireUserEmail = BITFeedbackUserDataElementDontShow;
+      self.requireUserEmail = BITFeedbackUserDataElementDontShow;
   }
 
-  return availableViaDelegate;
+  return userEmail != nil;
 }
 
 - (void)updateAppDefinedUserData {
-  [self updateUserIDUsingKeychainAndDelegate];
-  [self updateUserNameUsingKeychainAndDelegate];
-  [self updateUserEmailUsingKeychainAndDelegate];
+  [self updateUserIDUsingDelegate];
+  [self updateUserNameUsingDelegate];
+  [self updateUserEmailUsingDelegate];
 
   // if both values are shown via the delegates, we never ever did ask and will never ever ask for user data
-  if (self.requireUserName == BITFeedbackUserDataElementDontShow &&
-          self.requireUserEmail == BITFeedbackUserDataElementDontShow) {
+  if (self.requireUserName == BITFeedbackUserDataElementDontShow && self.requireUserEmail == BITFeedbackUserDataElementDontShow) {
     self.didAskUserData = NO;
   }
 }
@@ -392,9 +383,9 @@ typedef void (^BITLatestImageFetchCompletionBlock)(UIImage *_Nonnull latestImage
 #pragma mark - Local Storage
 
 - (void)loadMessages {
-  BOOL userIDViaDelegate = [self updateUserIDUsingKeychainAndDelegate];
-  BOOL userNameViaDelegate = [self updateUserNameUsingKeychainAndDelegate];
-  BOOL userEmailViaDelegate = [self updateUserEmailUsingKeychainAndDelegate];
+  BOOL userIDViaDelegate = [self updateUserIDUsingDelegate];
+  BOOL userNameViaDelegate = [self updateUserNameUsingDelegate];
+  BOOL userEmailViaDelegate = [self updateUserEmailUsingDelegate];
 
   if (![self.fileManager fileExistsAtPath:self.settingsFile])
     return;
@@ -414,25 +405,19 @@ typedef void (^BITLatestImageFetchCompletionBlock)(UIImage *_Nonnull latestImage
   if (!userIDViaDelegate) {
     if ([unarchiver containsValueForKey:kBITFeedbackUserID]) {
       self.userID = [unarchiver decodeObjectForKey:kBITFeedbackUserID];
-      [self addStringValueToKeychain:self.userID forKey:kBITFeedbackUserID];
     }
-    self.userID = [self stringValueFromKeychainForKey:kBITFeedbackUserID];
   }
 
   if (!userNameViaDelegate) {
     if ([unarchiver containsValueForKey:kBITFeedbackName]) {
       self.userName = [unarchiver decodeObjectForKey:kBITFeedbackName];
-      [self addStringValueToKeychain:self.userName forKey:kBITFeedbackName];
     }
-    self.userName = [self stringValueFromKeychainForKey:kBITFeedbackName];
   }
 
   if (!userEmailViaDelegate) {
     if ([unarchiver containsValueForKey:kBITFeedbackEmail]) {
       self.userEmail = [unarchiver decodeObjectForKey:kBITFeedbackEmail];
-      [self addStringValueToKeychain:self.userEmail forKey:kBITFeedbackEmail];
     }
-    self.userEmail = [self stringValueFromKeychainForKey:kBITFeedbackEmail];
   }
 
   if ([unarchiver containsValueForKey:kBITFeedbackUserDataAsked])
@@ -440,9 +425,7 @@ typedef void (^BITLatestImageFetchCompletionBlock)(UIImage *_Nonnull latestImage
 
   if ([unarchiver containsValueForKey:kBITFeedbackToken]) {
     self.token = [unarchiver decodeObjectForKey:kBITFeedbackToken];
-    [self addStringValueToKeychain:self.token forKey:kBITFeedbackToken];
   }
-  self.token = [self stringValueFromKeychainForKey:kBITFeedbackToken];
 
   if ([unarchiver containsValueForKey:kBITFeedbackAppID]) {
     NSString *appID = [unarchiver decodeObjectForKey:kBITFeedbackAppID];
@@ -492,19 +475,19 @@ typedef void (^BITLatestImageFetchCompletionBlock)(UIImage *_Nonnull latestImage
     [archiver encodeObject:[NSNumber numberWithBool:YES] forKey:kBITFeedbackUserDataAsked];
 
   if (self.token)
-    [self addStringValueToKeychain:self.token forKey:kBITFeedbackToken];
+    [archiver encodeObject:self.token forKey:kBITFeedbackToken];
 
   if (self.appIdentifier)
     [archiver encodeObject:self.appIdentifier forKey:kBITFeedbackAppID];
 
   if (self.userID)
-    [self addStringValueToKeychain:self.userID forKey:kBITFeedbackUserID];
+    [archiver encodeObject:self.userID forKey:kBITFeedbackUserID];
 
   if (self.userName)
-    [self addStringValueToKeychain:self.userName forKey:kBITFeedbackName];
+    [archiver encodeObject:self.userName forKey:kBITFeedbackName];
 
   if (self.userEmail)
-    [self addStringValueToKeychain:self.userEmail forKey:kBITFeedbackEmail];
+    [archiver encodeObject:self.userEmail forKey:kBITFeedbackEmail];
 
   if (self.lastCheck)
     [archiver encodeObject:self.lastCheck forKey:kBITFeedbackDateOfLastCheck];
@@ -516,6 +499,22 @@ typedef void (^BITLatestImageFetchCompletionBlock)(UIImage *_Nonnull latestImage
 
   [archiver finishEncoding];
   [data writeToFile:self.settingsFile atomically:YES];
+
+  // Tell BITHockeyManagerDelegate about userProvidedMetaData
+  id<BITHockeyManagerDelegate> strongDelegate = [BITHockeyManager sharedHockeyManager].delegate;
+  if ([strongDelegate respondsToSelector:@selector(userProvidedData:hockeyManager:componentManager:)]) {
+    BITHockeyUserData *userData = [[BITHockeyUserData alloc] init];
+    userData.userName = self.userName;
+    userData.userEmail = self.userEmail;
+
+    if ([self.feedbackList count] > 0)
+    {
+      BITFeedbackMessage *firstFeedbackMessage = [self.feedbackList objectAtIndex:0];
+      userData.userProvidedText = firstFeedbackMessage.text;
+
+    }
+    [strongDelegate userProvidedData:userData hockeyManager:[BITHockeyManager sharedHockeyManager] componentManager:self];
+  }
 }
 
 

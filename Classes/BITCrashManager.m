@@ -60,9 +60,6 @@
 #define kBITCrashApprovedReports @"HockeySDKCrashApprovedReports"
 
 // keys for meta information associated to each crash
-#define kBITCrashMetaUserName @"BITCrashMetaUserName"
-#define kBITCrashMetaUserEmail @"BITCrashMetaUserEmail"
-#define kBITCrashMetaUserID @"BITCrashMetaUserID"
 #define kBITCrashMetaApplicationLog @"BITCrashMetaApplicationLog"
 #define kBITCrashMetaAttachment @"BITCrashMetaAttachment"
 
@@ -352,12 +349,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
   [self.fileManager removeItemAtPath:[filename stringByAppendingString:@".data"] error:&error];
   [self.fileManager removeItemAtPath:[filename stringByAppendingString:@".meta"] error:&error];
   [self.fileManager removeItemAtPath:[filename stringByAppendingString:@".desc"] error:&error];
-  
-  NSString *cacheFilename = [filename lastPathComponent];
-  [self removeKeyFromKeychain:[NSString stringWithFormat:@"%@.%@", cacheFilename, kBITCrashMetaUserName]];
-  [self removeKeyFromKeychain:[NSString stringWithFormat:@"%@.%@", cacheFilename, kBITCrashMetaUserEmail]];
-  [self removeKeyFromKeychain:[NSString stringWithFormat:@"%@.%@", cacheFilename, kBITCrashMetaUserID]];
-  
+
   [self.crashFiles removeObject:filename];
   [self.approvedCrashReports removeObjectForKey:filename];
   
@@ -365,7 +357,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
 }
 
 /**
- *	 Remove all crash reports and stored meta data for each from the file system and keychain
+ *	 Remove all crash reports and stored meta data for each from the file system
  *
  * This is currently only used as a helper method for tests
  */
@@ -387,27 +379,30 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
   return [data writeToFile:attachmentFilename atomically:YES];
 }
 
+- (void)persistDescription:(NSString *)description {
+    NSString *descriptionPath = [NSString stringWithFormat:@"%@.desc", [self.crashesDir stringByAppendingPathComponent: self.lastCrashFilename]];
+
+    if (description && [description length] > 0) {
+        NSError *error;
+        [description writeToFile:descriptionPath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    }
+}
+
 - (void)persistUserProvidedMetaData:(BITCrashMetaData *)userProvidedMetaData {
-  if (!userProvidedMetaData) return;
-  
-  if (userProvidedMetaData.userProvidedDescription && [userProvidedMetaData.userProvidedDescription length] > 0) {
-    NSError *error;
-    [userProvidedMetaData.userProvidedDescription writeToFile:[NSString stringWithFormat:@"%@.desc", [self.crashesDir stringByAppendingPathComponent: self.lastCrashFilename]] atomically:YES encoding:NSUTF8StringEncoding error:&error];
-  }
-  
-  if (userProvidedMetaData.userName && [userProvidedMetaData.userName length] > 0) {
-    [self addStringValueToKeychain:userProvidedMetaData.userName forKey:[NSString stringWithFormat:@"%@.%@", self.lastCrashFilename, kBITCrashMetaUserName]];
-    
-  }
-  
-  if (userProvidedMetaData.userEmail && [userProvidedMetaData.userEmail length] > 0) {
-    [self addStringValueToKeychain:userProvidedMetaData.userEmail forKey:[NSString stringWithFormat:@"%@.%@", self.lastCrashFilename, kBITCrashMetaUserEmail]];
-  }
-  
-  if (userProvidedMetaData.userID && [userProvidedMetaData.userID length] > 0) {
-    [self addStringValueToKeychain:userProvidedMetaData.userID forKey:[NSString stringWithFormat:@"%@.%@", self.lastCrashFilename, kBITCrashMetaUserID]];
-    
-  }
+    if (!userProvidedMetaData) return;
+
+    [self persistDescription:userProvidedMetaData.userProvidedDescription];
+
+    // Tell BITHockeyManagerDelegate about userProvidedMetaData
+    id<BITHockeyManagerDelegate> strongDelegate = [BITHockeyManager sharedHockeyManager].delegate;
+    if ([strongDelegate respondsToSelector:@selector(userProvidedData:hockeyManager:componentManager:)]) {
+        BITHockeyUserData *userData = [[BITHockeyUserData alloc] init];
+        userData.userName = userProvidedMetaData.userName;
+        userData.userEmail = userProvidedMetaData.userEmail;
+        userData.userProvidedText = userProvidedMetaData.userProvidedDescription;
+
+        [strongDelegate userProvidedData:userData hockeyManager:[BITHockeyManager sharedHockeyManager] componentManager:self];
+    }
 }
 
 /**
@@ -669,7 +664,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
  *	@return The userID value
  */
 - (NSString *)userIDForCrashReport {
-  NSString *userID;
+  NSString *userID = nil;
 #if HOCKEYSDK_FEATURE_AUTHENTICATOR
   // if we have an identification from BITAuthenticator, use this as a default.
   if ((
@@ -680,16 +675,13 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
     userID = self.installationIdentification;
   }
 #endif
-  
-  // first check the global keychain storage
-  NSString *userIdFromKeychain = [self stringValueFromKeychainForKey:kBITHockeyMetaUserID];
-  if (userIdFromKeychain) {
-    userID = userIdFromKeychain;
-  }
+
+  // Ask BITHockeyManagerDelegate to return userID. If nil, use @""
   id<BITHockeyManagerDelegate> strongDelegate = [BITHockeyManager sharedHockeyManager].delegate;
   if ([strongDelegate respondsToSelector:@selector(userIDForHockeyManager:componentManager:)]) {
     userID = [strongDelegate userIDForHockeyManager:[BITHockeyManager sharedHockeyManager] componentManager:self];
   }
+
   return userID  ?: @"";
 }
 
@@ -699,13 +691,15 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
  *	@return The userName value
  */
 - (NSString *)userNameForCrashReport {
-  // first check the global keychain storage
-  NSString *username = [self stringValueFromKeychainForKey:kBITHockeyMetaUserName] ?: @"";
+  NSString *username = nil;
+
+  // Ask BITHockeyManagerDelegate to return userName. If nil, use @""
   id<BITHockeyManagerDelegate> strongDelegate = [BITHockeyManager sharedHockeyManager].delegate;
   if ([strongDelegate respondsToSelector:@selector(userNameForHockeyManager:componentManager:)]) {
-    username = [strongDelegate userNameForHockeyManager:[BITHockeyManager sharedHockeyManager] componentManager:self] ?: @"";
+    username = [strongDelegate userNameForHockeyManager:[BITHockeyManager sharedHockeyManager] componentManager:self];
   }
-  return username;
+
+  return username ?: @"";
 }
 
 /**
@@ -714,9 +708,8 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
  *	@return The userEmail value
  */
 - (NSString *)userEmailForCrashReport {
-  // first check the global keychain storage
-  NSString *useremail = [self stringValueFromKeychainForKey:kBITHockeyMetaUserEmail] ?: @"";
-  
+  NSString *userEmail = nil;
+
 #if HOCKEYSDK_FEATURE_AUTHENTICATOR
   // if we have an identification from BITAuthenticator, use this as a default.
   if ((
@@ -725,14 +718,17 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
        self.installationIdentificationType == BITAuthenticatorIdentificationTypeWebAuth
        ) &&
       self.installationIdentification) {
-    useremail = self.installationIdentification;
+    userEmail = self.installationIdentification;
   }
 #endif
+
+  // Ask BITHockeyManagerDelegate to return userEmail. If nil, use @""
   id<BITHockeyManagerDelegate> strongDelegate = [BITHockeyManager sharedHockeyManager].delegate;
   if ([strongDelegate respondsToSelector:@selector(userEmailForHockeyManager:componentManager:)]) {
-    useremail = [strongDelegate userEmailForHockeyManager:[BITHockeyManager sharedHockeyManager] componentManager:self] ?: @"";
+    userEmail = [strongDelegate userEmailForHockeyManager:[BITHockeyManager sharedHockeyManager] componentManager:self];
   }
-  return useremail;
+
+  return userEmail ?: @"";
 }
 
 #pragma mark - CrashCallbacks
@@ -794,13 +790,11 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
  */
 - (void)storeMetaDataForCrashReportFilename:(NSString *)filename {
   BITHockeyLogVerbose(@"VERBOSE: Storing meta data for crash report with filename %@", filename);
+
   NSError *error = NULL;
   NSMutableDictionary *metaDict = [NSMutableDictionary dictionaryWithCapacity:4];
   NSString *applicationLog = @"";
   
-  [self addStringValueToKeychain:[self userNameForCrashReport] forKey:[NSString stringWithFormat:@"%@.%@", filename, kBITCrashMetaUserName]];
-  [self addStringValueToKeychain:[self userEmailForCrashReport] forKey:[NSString stringWithFormat:@"%@.%@", filename, kBITCrashMetaUserEmail]];
-  [self addStringValueToKeychain:[self userIDForCrashReport] forKey:[NSString stringWithFormat:@"%@.%@", filename, kBITCrashMetaUserID]];
   id<BITCrashManagerDelegate> strongDelegate = self.delegate;
   if ([strongDelegate respondsToSelector:@selector(applicationLogForCrashManager:)]) {
     applicationLog = [strongDelegate applicationLogForCrashManager:self] ?: @"";
@@ -845,16 +839,25 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
       if ([strongDelegate respondsToSelector:@selector(crashManagerWillCancelSendingCrashReport:)]) {
         [strongDelegate crashManagerWillCancelSendingCrashReport:self];
       }
-      
+
+      if (userProvidedMetaData)
+        [self persistUserProvidedMetaData:userProvidedMetaData];
+
       if (self.lastCrashFilename)
         [self cleanCrashReportWithFilename:[self.crashesDir stringByAppendingPathComponent: self.lastCrashFilename]];
       
       return YES;
       
     case BITCrashManagerUserInputSend:
-      if (userProvidedMetaData)
+
+      if (userProvidedMetaData) {
         [self persistUserProvidedMetaData:userProvidedMetaData];
-      
+
+// TBD: no userName or userEmail currently collected for iOS
+//        self.userName = userProvidedMetaData.userName ?: [self userNameForCrashReport];
+//        self.userEmail = userProvidedMetaData.userEmail ?: [self userEmailForCrashReport];
+      }
+
       [self approveLatestCrashReport];
       [self sendNextCrashReport];
       return YES;
@@ -1497,9 +1500,13 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
       self.crashIdenticalCurrentVersion = YES;
     }
     
-    NSString *username = @"";
-    NSString *useremail = @"";
-    NSString *userid = @"";
+    // TBD: no userName or userEmail currently collected for iOS bug alert
+    //      NSString *username = self.userName ?: [self userNameForCrashReport];
+    //      NSString *useremail = self.userEmail ?: [self userEmailForCrashReport];
+    NSString *username = [self userNameForCrashReport];
+    NSString *useremail = [self userEmailForCrashReport];
+    // userID only comes from delegate, not Bug Alert Modal
+    NSString *userid = [self userIDForCrashReport];
     NSString *applicationLog = @"";
     NSString *description = @"";
     
@@ -1510,12 +1517,9 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
                                                 options:NSPropertyListMutableContainersAndLeaves
                                                 format:&format
                                                 error:&error];
-      
-      username = [self stringValueFromKeychainForKey:[NSString stringWithFormat:@"%@.%@", attachmentFilename.lastPathComponent, kBITCrashMetaUserName]] ?: @"";
-      useremail = [self stringValueFromKeychainForKey:[NSString stringWithFormat:@"%@.%@", attachmentFilename.lastPathComponent, kBITCrashMetaUserEmail]] ?: @"";
-      userid = [self stringValueFromKeychainForKey:[NSString stringWithFormat:@"%@.%@", attachmentFilename.lastPathComponent, kBITCrashMetaUserID]] ?: @"";
+
       applicationLog = [metaDict objectForKey:kBITCrashMetaApplicationLog] ?: @"";
-      description = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@.desc", [self.crashesDir stringByAppendingPathComponent: cacheFilename]] encoding:NSUTF8StringEncoding error:&error];
+      description = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@.desc", [self.crashesDir stringByAppendingPathComponent: cacheFilename]] encoding:NSUTF8StringEncoding error:&error] ?: @"";
       attachment = [self attachmentForCrashReport:attachmentFilename];
     } else {
       BITHockeyLogError(@"ERROR: Reading crash meta data. %@", error);
@@ -1529,7 +1533,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
       }
     }
     
-    crashXML = [NSString stringWithFormat:@"<crashes><crash><bsprotocolversion>1.1</bsprotocolversion><applicationname><![CDATA[%@]]></applicationname><uuids>%@</uuids><bundleidentifier>%@</bundleidentifier><systemversion>%@</systemversion><platform>%@</platform><senderversion>%@</senderversion><versionstring>%@</versionstring><version>%@</version><uuid>%@</uuid><log><![CDATA[%@]]></log><userid>%@</userid><username>%@</username><contact>%@</contact><installstring>%@</installstring><description><![CDATA[%@]]></description></crash></crashes>",
+    crashXML = [NSString stringWithFormat:@"<crashes><crash><bsprotocolversion>1.1</bsprotocolversion><applicationname><![CDATA[%@]]></applicationname><uuids>%@</uuids><bundleidentifier>%@</bundleidentifier><systemversion>%@</systemversion><platform>%@</platform><senderversion>%@</senderversion><versionstring>%@</versionstring><version>%@</version><uuid>%@</uuid><userid>%@</userid><username>%@</username><contact>%@</contact><installstring>%@</installstring><description><![CDATA[%@]]></description><log><![CDATA[%@]]></log></crash></crashes>",
                 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleExecutable"],
                 appBinaryUUIDs,
                 appBundleIdentifier,
@@ -1539,13 +1543,14 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
                 appBundleMarketingVersion,
                 appBundleVersion,
                 crashUUID,
-                [crashLogString stringByReplacingOccurrencesOfString:@"]]>" withString:@"]]" @"]]><![CDATA[" @">" options:NSLiteralSearch range:NSMakeRange(0,crashLogString.length)],
                 userid,
                 username,
                 useremail,
                 installString,
-                [description stringByReplacingOccurrencesOfString:@"]]>" withString:@"]]" @"]]><![CDATA[" @">" options:NSLiteralSearch range:NSMakeRange(0,description.length)]];
-    
+                [description stringByReplacingOccurrencesOfString:@"]]>" withString:@"]]" @"]]><![CDATA[" @">" options:NSLiteralSearch range:NSMakeRange(0,description.length)],
+                [crashLogString stringByReplacingOccurrencesOfString:@"]]>" withString:@"]]" @"]]><![CDATA[" @">" options:NSLiteralSearch range:NSMakeRange(0,crashLogString.length)]
+    ];
+
     BITHockeyLogDebug(@"INFO: Sending crash reports:\n%@", crashXML);
     [self sendCrashReportWithFilename:filename xml:crashXML attachment:attachment];
   } else {
@@ -1624,7 +1629,7 @@ __attribute__((noreturn)) static void uncaught_cxx_exception_handler(const BITCr
         theError = [NSError errorWithDomain:kBITCrashErrorDomain
                                        code:BITCrashAPIReceivedEmptyResponse
                                    userInfo:@{
-                                              NSLocalizedDescriptionKey: @"Sending failed with an empty response!"
+                                              NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Sending failed with an empty response! Status code: %li", (long)statusCode]
                                               }
                     ];
       } else if (statusCode >= 200 && statusCode < 400) {

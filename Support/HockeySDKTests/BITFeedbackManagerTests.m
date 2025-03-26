@@ -41,10 +41,6 @@
 }
 
 - (void)tearDown {
-  [self.sut removeKeyFromKeychain:kBITHockeyMetaUserID];
-  [self.sut removeKeyFromKeychain:kBITHockeyMetaUserName];
-  [self.sut removeKeyFromKeychain:kBITHockeyMetaUserEmail];
-
   self.sut = nil;
   
   [super tearDown];
@@ -81,7 +77,7 @@
   hm.delegate = delegateMock;
   self.sut.delegate = delegateMock;
   
-  BOOL dataAvailable = [self.sut updateUserIDUsingKeychainAndDelegate];
+  BOOL dataAvailable = [self.sut updateUserIDUsingDelegate];
   
   assertThatBool(dataAvailable, isFalse());
   assertThat(self.sut.userID, nilValue());
@@ -96,7 +92,7 @@
   hm.delegate = classMock;
   self.sut.delegate = classMock;
   
-  BOOL dataAvailable = [self.sut updateUserIDUsingKeychainAndDelegate];
+  BOOL dataAvailable = [self.sut updateUserIDUsingDelegate];
   
   assertThatBool(dataAvailable, isTrue());
   assertThat(self.sut.userID, equalTo(@"test"));
@@ -104,33 +100,13 @@
   [verifyCount(classMock, times(1)) userIDForHockeyManager:hm componentManager:self.sut];
 }
 
-- (void)testUpdateUserIDWithValueInKeychain {
-  [self.sut addStringValueToKeychain:@"test" forKey:kBITHockeyMetaUserID];
-  
-  BOOL dataAvailable = [self.sut updateUserIDUsingKeychainAndDelegate];
-  
-  assertThatBool(dataAvailable, isTrue());
-  assertThat(self.sut.userID, equalTo(@"test"));
-}
-
-- (void)testUpdateUserIDWithGlobalSetter {
-  BITHockeyManager *hm = [BITHockeyManager sharedHockeyManager];
-  [hm setUserID:@"test"];
-  
-  BOOL dataAvailable = [self.sut updateUserIDUsingKeychainAndDelegate];
-  
-  assertThatBool(dataAvailable, isTrue());
-  assertThat(self.sut.userID, equalTo(@"test"));
-}
-
-
 - (void)testUpdateUserNameWithNoDataPresent {
   BITHockeyManager *hm = [BITHockeyManager sharedHockeyManager];
   id delegateMock = mockProtocol(@protocol(BITHockeyManagerDelegate));
   hm.delegate = delegateMock;
   self.sut.delegate = delegateMock;
   
-  BOOL dataAvailable = [self.sut updateUserNameUsingKeychainAndDelegate];
+  BOOL dataAvailable = [self.sut updateUserNameUsingDelegate];
   
   assertThatBool(dataAvailable, isFalse());
   assertThat(self.sut.userName, nilValue());
@@ -145,7 +121,7 @@
   hm.delegate = classMock;
   self.sut.delegate = classMock;
   
-  BOOL dataAvailable = [self.sut updateUserNameUsingKeychainAndDelegate];
+  BOOL dataAvailable = [self.sut updateUserNameUsingDelegate];
   
   assertThatBool(dataAvailable, isTrue());
   assertThat(self.sut.userName, equalTo(@"test"));
@@ -153,33 +129,13 @@
   [verifyCount(classMock, times(1)) userNameForHockeyManager:hm componentManager:self.sut];
 }
 
-- (void)testUpdateUserNameWithValueInKeychain {
-  [self.sut addStringValueToKeychain:@"test" forKey:kBITHockeyMetaUserName];
-  
-  BOOL dataAvailable = [self.sut updateUserNameUsingKeychainAndDelegate];
-  
-  assertThatBool(dataAvailable, isTrue());
-  assertThat(self.sut.userName, equalTo(@"test"));
-}
-
-- (void)testUpdateUserNameWithGlobalSetter {
-  BITHockeyManager *hm = [BITHockeyManager sharedHockeyManager];
-  [hm setUserName:@"test"];
-  
-  BOOL dataAvailable = [self.sut updateUserNameUsingKeychainAndDelegate];
-  
-  assertThatBool(dataAvailable, isTrue());
-  assertThat(self.sut.userName, equalTo(@"test"));
-}
-
-
 - (void)testUpdateUserEmailWithNoDataPresent {
   BITHockeyManager *hm = [BITHockeyManager sharedHockeyManager];
   id delegateMock = mockProtocol(@protocol(BITHockeyManagerDelegate));
   hm.delegate = delegateMock;
   self.sut.delegate = delegateMock;
   
-  BOOL dataAvailable = [self.sut updateUserEmailUsingKeychainAndDelegate];
+  BOOL dataAvailable = [self.sut updateUserEmailUsingDelegate];
   
   assertThatBool(dataAvailable, isFalse());
   assertThat(self.sut.userEmail, nilValue());
@@ -194,31 +150,12 @@
   hm.delegate = classMock;
   self.sut.delegate = classMock;
   
-  BOOL dataAvailable = [self.sut updateUserEmailUsingKeychainAndDelegate];
+  BOOL dataAvailable = [self.sut updateUserEmailUsingDelegate];
   
   assertThatBool(dataAvailable, isTrue());
   assertThat(self.sut.userEmail, equalTo(@"test"));
   
   [verifyCount(classMock, times(1)) userEmailForHockeyManager:hm componentManager:self.sut];
-}
-
-- (void)testUpdateUserEmailWithValueInKeychain {
-  [self.sut addStringValueToKeychain:@"test" forKey:kBITHockeyMetaUserEmail];
-  
-  BOOL dataAvailable = [self.sut updateUserEmailUsingKeychainAndDelegate];
-  
-  assertThatBool(dataAvailable, isTrue());
-  assertThat(self.sut.userEmail, equalTo(@"test"));
-}
-
-- (void)testUpdateUserEmailWithGlobalSetter {
-  BITHockeyManager *hm = [BITHockeyManager sharedHockeyManager];
-  [hm setUserEmail:@"test"];
-  
-  BOOL dataAvailable = [self.sut updateUserEmailUsingKeychainAndDelegate];
-  
-  assertThatBool(dataAvailable, isTrue());
-  assertThat(self.sut.userEmail, equalTo(@"test"));
 }
 
 - (void)testAllowFetchingNewMessages {

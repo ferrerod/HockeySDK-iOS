@@ -38,6 +38,8 @@
 
 #import "BITHockeyLogger.h"
 
+#import "BITHockeyUserData.h"
+
 #if HOCKEYSDK_FEATURE_CRASH_REPORTER || HOCKEYSDK_FEATURE_FEEDBACK
 #import "BITHockeyAttachment.h"
 #endif
