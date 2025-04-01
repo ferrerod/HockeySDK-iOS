@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -254,7 +254,6 @@
 		628B732DD714E961EE4083C3 /* BITHockeyLoggerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 628B7B9B7E7741C3D85B1159 /* BITHockeyLoggerTests.m */; };
 		628B7821DFEF43CBC1BB09A6 /* BITHockeyLoggerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 628B7B9B7E7741C3D85B1159 /* BITHockeyLoggerTests.m */; };
 		6341B2922BE0165C007EE8AC /* CrashReporter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63598C372B9A412800770E43 /* CrashReporter.xcframework */; };
-		6341B2932BE0165C007EE8AC /* CrashReporter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 63598C372B9A412800770E43 /* CrashReporter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		637EA8BC2D8B6209008F79E3 /* BITHockeyUserData.h in Headers */ = {isa = PBXBuildFile; fileRef = 637EA8BB2D8B6209008F79E3 /* BITHockeyUserData.h */; };
 		637EA8BD2D8B6209008F79E3 /* BITHockeyUserData.h in Headers */ = {isa = PBXBuildFile; fileRef = 637EA8BB2D8B6209008F79E3 /* BITHockeyUserData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		637EA8BF2D8B6988008F79E3 /* BITHockeyUserData.m in Sources */ = {isa = PBXBuildFile; fileRef = 637EA8BE2D8B6988008F79E3 /* BITHockeyUserData.m */; };
@@ -506,20 +505,6 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		6341B2942BE0165C007EE8AC /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				6341B2932BE0165C007EE8AC /* CrashReporter.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		1E0828FF1708F69A0073050E /* BITStoreUpdateManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BITStoreUpdateManagerDelegate.h; sourceTree = "<group>"; };
 		1E0FEE26173BDB260061331F /* BITKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BITKeychainUtils.h; sourceTree = "<group>"; };
@@ -663,7 +648,7 @@
 		1EFF03D717F20F8300A5F13C /* BITCrashManagerPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BITCrashManagerPrivate.h; sourceTree = "<group>"; };
 		1EFF03E417F2485500A5F13C /* BITCrashManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BITCrashManagerTests.m; sourceTree = "<group>"; };
 		628B7B9B7E7741C3D85B1159 /* BITHockeyLoggerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BITHockeyLoggerTests.m; sourceTree = "<group>"; };
-		63598C372B9A412800770E43 /* CrashReporter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CrashReporter.xcframework; path = ../Vendor/CrashReporter.xcframework; sourceTree = "<group>"; };
+		63598C372B9A412800770E43 /* CrashReporter.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:TN6R4Q475K:BugSplat, LLC"; lastKnownFileType = wrapper.xcframework; name = CrashReporter.xcframework; path = ../Vendor/CrashReporter.xcframework; sourceTree = "<group>"; };
 		637EA8BB2D8B6209008F79E3 /* BITHockeyUserData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BITHockeyUserData.h; sourceTree = "<group>"; };
 		637EA8BE2D8B6988008F79E3 /* BITHockeyUserData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BITHockeyUserData.m; sourceTree = "<group>"; };
 		6EA5DEA41CC05E7600D44206 /* live_report_xamarin.plcrash */ = {isa = PBXFileReference; lastKnownFileType = file; path = live_report_xamarin.plcrash; sourceTree = "<group>"; };
@@ -1606,7 +1591,6 @@
 				1EB6173B1B0A30480035A986 /* Frameworks */,
 				1EB6173C1B0A30480035A986 /* Headers */,
 				1EB6173D1B0A30480035A986 /* Resources */,
-				6341B2942BE0165C007EE8AC /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1659,8 +1643,9 @@
 		E4005611148D79B500EB22B9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastTestingUpgradeCheck = 0600;
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					1E5A458F16F0DFC200B55C04 = {
 						DevelopmentTeam = TN6R4Q475K;
@@ -1682,10 +1667,9 @@
 			};
 			buildConfigurationList = E4005614148D79B500EB22B9 /* Build configuration list for PBXProject "HockeySDK" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				de,
 				es,
@@ -2345,7 +2329,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
@@ -2919,7 +2902,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
@@ -2973,7 +2955,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
@@ -3029,7 +3010,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
@@ -3723,7 +3703,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
@@ -4027,7 +4006,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = TN6R4Q475K;
