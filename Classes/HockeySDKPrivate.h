@@ -42,26 +42,9 @@
 
 #define BITHOCKEY_FEEDBACK_SETTINGS @"BITFeedbackManager.plist"
 
-#define BITHOCKEY_USAGE_DATA @"BITUpdateManager.plist"
-
 #define kBITHockeyMetaUserName  @"BITHockeyMetaUserName"
 #define kBITHockeyMetaUserEmail @"BITHockeyMetaUserEmail"
 #define kBITHockeyMetaUserID    @"BITHockeyMetaUserID"
-
-#define kBITUpdateInstalledUUID              @"BITUpdateInstalledUUID"
-#define kBITUpdateInstalledVersionID         @"BITUpdateInstalledVersionID"
-#define kBITUpdateCurrentCompanyName         @"BITUpdateCurrentCompanyName"
-#define kBITUpdateArrayOfLastCheck           @"BITUpdateArrayOfLastCheck"
-#define kBITUpdateDateOfLastCheck            @"BITUpdateDateOfLastCheck"
-#define kBITUpdateDateOfVersionInstallation  @"BITUpdateDateOfVersionInstallation"
-#define kBITUpdateUsageTimeOfCurrentVersion  @"BITUpdateUsageTimeOfCurrentVersion"
-#define kBITUpdateUsageTimeForUUID           @"BITUpdateUsageTimeForUUID"
-#define kBITUpdateInstallationIdentification @"BITUpdateInstallationIdentification"
-
-#define kBITStoreUpdateDateOfLastCheck       @"BITStoreUpdateDateOfLastCheck"
-#define kBITStoreUpdateLastStoreVersion      @"BITStoreUpdateLastStoreVersion"
-#define kBITStoreUpdateLastUUID              @"BITStoreUpdateLastUUID"
-#define kBITStoreUpdateIgnoreVersion         @"BITStoreUpdateIgnoredVersion"
 
 #define BITHOCKEY_INTEGRATIONFLOW_TIMESTAMP  @"BITIntegrationFlowStartTimestamp"
 

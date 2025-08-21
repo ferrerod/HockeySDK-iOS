@@ -30,7 +30,7 @@
 #import "HockeySDK.h"
 #import "HockeySDKPrivate.h"
 
-#if HOCKEYSDK_FEATURE_CRASH_REPORTER || HOCKEYSDK_FEATURE_FEEDBACK || HOCKEYSDK_FEATURE_UPDATES || HOCKEYSDK_FEATURE_AUTHENTICATOR || HOCKEYSDK_FEATURE_STORE_UPDATES || HOCKEYSDK_FEATURE_METRICS
+#if HOCKEYSDK_FEATURE_CRASH_REPORTER || HOCKEYSDK_FEATURE_FEEDBACK || HOCKEYSDK_FEATURE_AUTHENTICATOR || HOCKEYSDK_FEATURE_METRICS
 #import "BITHockeyBaseManagerPrivate.h"
 #endif
 
@@ -56,14 +56,6 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
 #import "BITCrashManagerPrivate.h"
 #endif /* HOCKEYSDK_FEATURE_CRASH_REPORTER */
 
-#if HOCKEYSDK_FEATURE_UPDATES
-#import "BITUpdateManagerPrivate.h"
-#endif /* HOCKEYSDK_FEATURE_UPDATES */
-
-#if HOCKEYSDK_FEATURE_STORE_UPDATES
-#import "BITStoreUpdateManagerPrivate.h"
-#endif /* HOCKEYSDK_FEATURE_STORE_UPDATES */
-
 #if HOCKEYSDK_FEATURE_FEEDBACK
 #import "BITFeedbackManagerPrivate.h"
 #endif /* HOCKEYSDK_FEATURE_FEEDBACK */
@@ -85,7 +77,6 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
 @property (nonatomic, copy) NSString *liveIdentifier;
 @property (nonatomic) BOOL validAppIdentifier;
 @property (nonatomic) BOOL startManagerIsInvoked;
-@property (nonatomic) BOOL startUpdateManagerIsInvoked;
 @property (nonatomic) BOOL managersInitialized;
 @property (nonatomic, strong) BITHockeyAppClient *hockeyAppClient;
 
@@ -94,14 +85,6 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
 
 #if HOCKEYSDK_FEATURE_CRASH_REPORTER
 @property (nonatomic, strong, readwrite) BITCrashManager *crashManager;
-#endif
-
-#if HOCKEYSDK_FEATURE_UPDATES
-@property (nonatomic, strong, readwrite) BITUpdateManager *updateManager;
-#endif
-
-#if HOCKEYSDK_FEATURE_STORE_UPDATES
-@property (nonatomic, strong, readwrite) BITStoreUpdateManager *storeUpdateManager;
 #endif
 
 #if HOCKEYSDK_FEATURE_FEEDBACK
@@ -178,17 +161,8 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
 #if HOCKEYSDK_FEATURE_FEEDBACK
     _disableFeedbackManager = NO;
 #endif
-#if HOCKEYSDK_FEATURE_UPDATES
-    _disableUpdateManager = NO;
-#endif
-#if HOCKEYSDK_FEATURE_STORE_UPDATES
-    _enableStoreUpdateManager = NO;
-#endif
-    
     _appEnvironment = bit_currentAppEnvironment();
-    _startManagerIsInvoked = NO;
-    _startUpdateManagerIsInvoked = NO;
-    
+    _startManagerIsInvoked = NO;    
     _liveIdentifier = nil;
     _installString = bit_appAnonID(NO);
     _disableInstallTracking = NO;
@@ -293,17 +267,6 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
   if (bit_isRunningInAppExtension()) {
     return;
   }
-  
-#if HOCKEYSDK_FEATURE_STORE_UPDATES
-  // start StoreUpdateManager
-  if ([self isStoreUpdateManagerEnabled]) {
-    BITHockeyLogDebug(@"INFO: Start StoreUpdateManager");
-    if (self.serverURL) {
-      [self.storeUpdateManager setServerURL:self.serverURL];
-    }
-    [self.storeUpdateManager performSelector:@selector(startManager) withObject:nil afterDelay:0.5];
-  }
-#endif /* HOCKEYSDK_FEATURE_STORE_UPDATES */
 
 #if HOCKEYSDK_FEATURE_FEEDBACK
   // start FeedbackManager
@@ -329,41 +292,7 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
     [self.authenticator performSelector:@selector(startManager) withObject:nil afterDelay:0.5];
   }
 #endif /* HOCKEYSDK_FEATURE_AUTHENTICATOR */
-  
-#if HOCKEYSDK_FEATURE_UPDATES
-  BOOL isIdentified = NO;
-
-#if HOCKEYSDK_FEATURE_AUTHENTICATOR
-  if (self.appEnvironment != BITEnvironmentAppStore)
-    isIdentified = [self.authenticator isIdentified];
-#endif /* HOCKEYSDK_FEATURE_AUTHENTICATOR */
-
-  // Setup UpdateManager
-  if (![self isUpdateManagerDisabled] && isIdentified) {
-    [self invokeStartUpdateManager];
-  }
-#endif /* HOCKEYSDK_FEATURE_UPDATES */
 }
-
-#if HOCKEYSDK_FEATURE_UPDATES
-- (void)setDisableUpdateManager:(BOOL)disableUpdateManager {
-  if (self.updateManager) {
-    [self.updateManager setDisableUpdateManager:disableUpdateManager];
-  }
-  _disableUpdateManager = disableUpdateManager;
-}
-#endif /* HOCKEYSDK_FEATURE_UPDATES */
-
-
-#if HOCKEYSDK_FEATURE_STORE_UPDATES
-- (void)setEnableStoreUpdateManager:(BOOL)enableStoreUpdateManager {
-  if (self.storeUpdateManager) {
-    [self.storeUpdateManager setEnableStoreUpdateManager:enableStoreUpdateManager];
-  }
-  _enableStoreUpdateManager = enableStoreUpdateManager;
-}
-#endif /* HOCKEYSDK_FEATURE_STORE_UPDATES */
-
 
 #if HOCKEYSDK_FEATURE_FEEDBACK
 - (void)setDisableFeedbackManager:(BOOL)disableFeedbackManager {
@@ -417,24 +346,12 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
       self.crashManager.delegate = currentDelegate;
     }
 #endif /* HOCKEYSDK_FEATURE_CRASH_REPORTER */
-    
-#if HOCKEYSDK_FEATURE_UPDATES
-    if (self.updateManager) {
-      self.updateManager.delegate = currentDelegate;
-    }
-#endif /* HOCKEYSDK_FEATURE_UPDATES */
-    
+
 #if HOCKEYSDK_FEATURE_FEEDBACK
     if (self.feedbackManager) {
       self.feedbackManager.delegate = currentDelegate;
     }
 #endif /* HOCKEYSDK_FEATURE_FEEDBACK */
-    
-#if HOCKEYSDK_FEATURE_STORE_UPDATES
-    if (self.storeUpdateManager) {
-      self.storeUpdateManager.delegate = currentDelegate;
-    }
-#endif /* HOCKEYSDK_FEATURE_STORE_UPDATES */
 
 #if HOCKEYSDK_FEATURE_AUTHENTICATOR
     if (self.authenticator) {
@@ -516,24 +433,6 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
 - (NSString *)build {
   return (NSString *)[NSString stringWithUTF8String:bitstadium_library_info.hockey_build];
 }
-
-
-#pragma mark - KVO
-
-#if HOCKEYSDK_FEATURE_UPDATES
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *) __unused change context:(void *) __unused context {
-  if ([keyPath isEqualToString:@"identified"] &&
-      [(BITAuthenticator *)object valueForKey:@"isIdentified"] ) {
-    if (self.appEnvironment != BITEnvironmentAppStore) {
-      BOOL identified = [(NSNumber *)[(BITAuthenticator *)object valueForKey:@"isIdentified"] boolValue];
-      if (identified && ![self isUpdateManagerDisabled]) {
-        [self invokeStartUpdateManager];
-      }
-    }
-  }
-}
-#endif /* HOCKEYSDK_FEATURE_UPDATES */
-
 
 #pragma mark - Private Instance Methods
 
@@ -622,26 +521,6 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
   }
 }
 
-#if HOCKEYSDK_FEATURE_UPDATES
-- (void)invokeStartUpdateManager {
-  if (self.startUpdateManagerIsInvoked) return;
-  
-  self.startUpdateManagerIsInvoked = YES;
-  BITHockeyLogDebug(@"INFO: Start UpdateManager");
-  if (self.serverURL) {
-    [self.updateManager setServerURL:self.serverURL];
-  }
-#if HOCKEYSDK_FEATURE_AUTHENTICATOR
-  if (self.authenticator) {
-    [self.updateManager setInstallationIdentification:[self.authenticator installationIdentifier]];
-    [self.updateManager setInstallationIdentificationType:[self.authenticator installationIdentifierParameterString]];
-    [self.updateManager setInstallationIdentified:[self.authenticator isIdentified]];
-  }
-#endif
-  [self.updateManager performSelector:@selector(startManager) withObject:nil afterDelay:0.5];
-}
-#endif /* HOCKEYSDK_FEATURE_UPDATES */
-
 - (BOOL)isSetUpOnMainThread {
   NSString *errorString = @"ERROR: HockeySDK has to be setup on the main thread!";
   
@@ -691,19 +570,7 @@ static bitstadium_info_t bitstadium_library_info __attribute__((section("__TEXT,
                                                    hockeyAppClient:[self hockeyAppClient]];
     self.crashManager.delegate = currentDelegate;
 #endif /* HOCKEYSDK_FEATURE_CRASH_REPORTER */
-    
-#if HOCKEYSDK_FEATURE_UPDATES
-    BITHockeyLogDebug(@"INFO: Setup UpdateManager");
-    self.updateManager = [[BITUpdateManager alloc] initWithAppIdentifier:self.appIdentifier appEnvironment:self.appEnvironment];
-    self.updateManager.delegate = currentDelegate;
-#endif /* HOCKEYSDK_FEATURE_UPDATES */
 
-#if HOCKEYSDK_FEATURE_STORE_UPDATES
-    BITHockeyLogDebug(@"INFO: Setup StoreUpdateManager");
-    self.storeUpdateManager = [[BITStoreUpdateManager alloc] initWithAppIdentifier:self.appIdentifier appEnvironment:self.appEnvironment];
-    self.storeUpdateManager.delegate = currentDelegate;
-#endif /* HOCKEYSDK_FEATURE_STORE_UPDATES */
-    
 #if HOCKEYSDK_FEATURE_FEEDBACK
     BITHockeyLogDebug(@"INFO: Setup FeedbackManager");
     self.feedbackManager = [[BITFeedbackManager alloc] initWithAppIdentifier:self.appIdentifier appEnvironment:self.appEnvironment];

@@ -33,7 +33,7 @@
 
 #import "BITHockeyBaseManager.h"
 #import "BITHockeyBaseManagerPrivate.h"
-#if HOCKEYSDK_FEATURE_AUTHENTICATOR || HOCKEYSDK_FEATURE_UPDATES || HOCKEYSDK_FEATURE_FEEDBACK
+#if HOCKEYSDK_FEATURE_AUTHENTICATOR || HOCKEYSDK_FEATURE_FEEDBACK
 #import "BITHockeyBaseViewController.h"
 #endif
 
@@ -47,7 +47,7 @@
 // HockeySDK Distribution scheme. Since several configurations are build in this scheme
 // and different features can be turned on and off we can't just use __unused attribute.
 #if !defined (HOCKEYSDK_CONFIGURATION_ReleaseCrashOnlyExtensions)
-#if HOCKEYSDK_FEATURE_AUTHENTICATOR || HOCKEYSDK_FEATURE_UPDATES || HOCKEYSDK_FEATURE_FEEDBACK
+#if HOCKEYSDK_FEATURE_AUTHENTICATOR || HOCKEYSDK_FEATURE_FEEDBACK
 #define BIT_UNUSED
 #else
 #define BIT_UNUSED __unused
@@ -248,7 +248,7 @@
 - (void)showView:(BIT_UNUSED UIViewController *)viewController {
   // if we compile Crash only, then BITHockeyBaseViewController is not included
   // in the headers and will cause a warning with the modulemap file
-#if HOCKEYSDK_FEATURE_AUTHENTICATOR || HOCKEYSDK_FEATURE_UPDATES || HOCKEYSDK_FEATURE_FEEDBACK
+#if HOCKEYSDK_FEATURE_AUTHENTICATOR || HOCKEYSDK_FEATURE_FEEDBACK
     UIViewController *parentViewController = [self visibleWindowRootViewController];
     
     // as per documentation this only works if called from within viewWillAppear: or viewDidAppear:
@@ -285,7 +285,7 @@
         [(BITHockeyBaseViewController *)viewController setModalAnimated:NO];
       [visibleWindow addSubview:self.navController.view];
     }
-#endif /* HOCKEYSDK_FEATURE_AUTHENTICATOR || HOCKEYSDK_FEATURE_UPDATES || HOCKEYSDK_FEATURE_FEEDBACK */
+#endif /* HOCKEYSDK_FEATURE_AUTHENTICATOR || HOCKEYSDK_FEATURE_FEEDBACK */
 }
 #endif // HOCKEYSDK_CONFIGURATION_ReleaseCrashOnlyExtensions && HOCKEYSDK_CONFIGURATION_RelaseCrashOnlyWatchOS
 
